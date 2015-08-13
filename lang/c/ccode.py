@@ -64,6 +64,10 @@ def _create_binary_operation(name, op):
 
 
 Addition = _create_binary_operation("Addition", "+")
+Subtraction = _create_binary_operation("Subtraction", "-")
+Multiplication = _create_binary_operation("Multiplication", "*")
+Division = _create_binary_operation("Division", "/")
+Modulo = _create_binary_operation("Modulo", "%")
 
 
 class Block(CCode):
