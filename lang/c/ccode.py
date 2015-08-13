@@ -32,13 +32,38 @@ class Variable(Expr):
     def __init__(self, decl, value=None):
         self.decl = decl
         self.value = value
-        self.expr = str(decl)
+        self.expr = decl.name  # for Expr._act
 
     def _var_act(self, source):
         Expr._act(self, source)
         if self.value is not None:
             source.write(" = ")
             self.value._act(source)
+
+
+class _BinaryOperation(Expr):
+
+    OP = None
+
+    def __init__(self, left, right):
+        if self.OP is None:
+            raise NotImplementedError("This is an abstract class")
+        self.left = left
+        self.right = right
+
+    def _act(self, source):
+        source.write("(")
+        self.left._act(source)
+        source.write(") {} (".format(self.OP))
+        self.right._act(source)
+        source.write(")")
+
+
+def _create_binary_operation(name, op):
+    return type(name, (_BinaryOperation,), dict(OP=op))
+
+
+Addition = _create_binary_operation("Addition", "+")
 
 
 class Block(CCode):
