@@ -139,6 +139,23 @@ class WhileLoop(IfBlock):
     MAGIC_WORD = "while"
 
 
+class FuncCall(Expr):
+
+    def __init__(self, funcname, args):
+        self.funcname = funcname
+        self.args = args
+
+    def _act(self, source):
+        source.write("{}(".format(self.funcname))
+        first = True
+        for arg in self.args:
+            if not first:
+                source.write(", ")
+            first = False
+            arg._act(source)
+        source.write(")")
+
+
 class Func(Block):
 
     def __init__(self, decl, *args, **kw):
@@ -156,3 +173,6 @@ class Func(Block):
             self.vars,
             self.code,
         )
+
+    def make_func_call(self, args):
+        return FuncCall(self.decl.name, args)
