@@ -35,7 +35,7 @@ class Variable(Expr):
         self.expr = decl.name  # for Expr._act
 
     def _var_act(self, source):
-        Expr._act(self, source)
+        source.write(str(self.decl))
         if self.value is not None:
             source.write(" = ")
             self.value._act(source)
