@@ -7,7 +7,11 @@ def _cls_repr(cls):
     return "{}.{}".format(cls.__module__, cls.__name__)
 
 
-class Expr(Code):
+class CCode(Code):
+    pass
+
+
+class Expr(CCode):
 
     def __init__(self, expr):
         self.expr = expr
@@ -37,7 +41,7 @@ class Variable(Expr):
             self.value._act(source)
 
 
-class Block(Code):
+class Block(CCode):
 
     def __init__(self, variables=None, code=None):
         if variables is None:
