@@ -16,6 +16,9 @@ class _CType(object):
     def _make(self):
         raise NotImplementedError("This is an abstract class")
 
+    def __call__(self, name):
+        return CDecl(self, name)
+
 
 class Primitive(_CType):
 
