@@ -100,6 +100,12 @@ AssignmentMultiplication = _create_binary_operation(
 )
 AssignmentDivision = _create_binary_operation("AssignmentDivision", "/=")
 AssignmentModulo = _create_binary_operation("AssignmentModulo", "%=")
+Equal = _create_binary_operation("Equal", "==")
+Unequal = _create_binary_operation("Unequal", "!=")
+LessThan = _create_binary_operation("LessThan", "<")
+LessEqualThan = _create_binary_operation("LessEqualThan", "<=")
+GreaterThan = _create_binary_operation("GreaterThan", ">")
+GreaterEqualThan = _create_binary_operation("GreaterEqualThan", ">=")
 
 
 class Block(CCode):
