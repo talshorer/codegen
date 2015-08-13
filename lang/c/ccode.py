@@ -51,9 +51,9 @@ class IfBlock(Block):
 
     MAGIC_WORD = "if"
 
-    def __init__(self, cond, code=None):
+    def __init__(self, cond, *args, **kw):
         self.cond = cond
-        Block.__init__(self, code)
+        Block.__init__(self, *args, **kw)
 
     def _act(self, source):
         source.write("{} (".format(self.MAGIC_WORD))
@@ -76,9 +76,9 @@ class WhileLoop(IfBlock):
 
 class Func(Block):
 
-    def __init__(self, decl, code=None):
+    def __init__(self, decl, *args, **kw):
         self.decl = decl
-        Block.__init__(self, code)
+        Block.__init__(self, *args, **kw)
 
     def _act(self, source):
         source.writeline(str(self.decl))
