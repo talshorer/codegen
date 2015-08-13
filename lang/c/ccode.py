@@ -106,6 +106,11 @@ LessThan = _create_binary_operation("LessThan", "<")
 LessEqualThan = _create_binary_operation("LessEqualThan", "<=")
 GreaterThan = _create_binary_operation("GreaterThan", ">")
 GreaterEqualThan = _create_binary_operation("GreaterEqualThan", ">=")
+LeftShift = _create_binary_operation("LeftShift", "<<")
+RightShift = _create_binary_operation("RightShift", ">>")
+And = _create_binary_operation("And", "&")
+Or = _create_binary_operation("Or", "|")
+Xor = _create_binary_operation("Xor", "^")
 
 
 class Block(CCode):
