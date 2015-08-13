@@ -14,6 +14,7 @@ class Source(object):
         self.config = config
         self._indent_level = 0
         self._indented = False
+        self._elements = []
 
     def indent(self):
         self._indent_level += 1
@@ -35,3 +36,10 @@ class Source(object):
     def writeline(self, text):
         self.write(text)
         self.linefeed()
+
+    def add_element(self, element):
+        self._elements.append(element)
+
+    def make(self):
+        for element in self._elements:
+            element._act(self)
