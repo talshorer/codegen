@@ -44,3 +44,21 @@ class Block(Code):
 
     def __repr__(self):
         return "{}({!r})".format(_cls_repr(type(self)), self.code)
+
+
+class Func(Block):
+
+    def __init__(self, decl, code=None):
+        self.decl = decl
+        Block.__init__(self, code)
+
+    def _act(self, source):
+        source.writeline(str(self.decl))
+        Block._act(self, source)
+
+    def __repr__(self):
+        return "{}({!r}, {!r})".format(
+            _cls_repr(type(self)),
+            self.decl,
+            self.code,
+        )
