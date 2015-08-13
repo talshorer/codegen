@@ -113,6 +113,45 @@ Or = _create_binary_operation("Or", "|")
 Xor = _create_binary_operation("Xor", "^")
 
 
+class _UnaryOperation(Expr):
+
+    OP = None
+    IS_SUFFIX = False
+    PARENTHESES_BEHAVIOUR = False
+
+    def __init__(self, operand):
+        if self.OP is None:
+            raise NotImplementedError("This is an abstract class")
+        self.operand = operand
+
+    def _act(self, source):
+        if not self.IS_SUFFIX:
+            source.write(self.OP)
+        operand_needs_parentheses = self.operand.needs_parentheses()
+        if operand_needs_parentheses:
+            source.write("(")
+        self.operand._act(source)
+        if operand_needs_parentheses:
+            source.write(")")
+        if self.IS_SUFFIX:
+            source.write(self.OP)
+
+
+def _create_unary_operation(name, op, is_suffix=False):
+    return type(name, (_UnaryOperation,), dict(OP=op, IS_SUFFIX=is_suffix))
+
+
+BitNegation = _create_unary_operation("BitNegation", "~")
+LogicalNot = _create_unary_operation("LogicalNot", "!")
+Minus = _create_unary_operation("Minus", "-")
+AddressOf = _create_unary_operation("AddressOf", "&")
+Dereference = _create_unary_operation("Dereference", "*")
+PreIncrement = _create_unary_operation("PreIncrement", "++")
+PreDecrement = _create_unary_operation("PreDecrement", "--")
+PostIncrement = _create_unary_operation("PostIncrement", "++", True)
+PostDecrement = _create_unary_operation("PostDecrement", "--", True)
+
+
 class Block(CCode):
 
     # set to a boolean value if the same behaviour is always wanted
