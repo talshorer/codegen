@@ -69,6 +69,11 @@ class IfBlock(Block):
         )
 
 
+class WhileLoop(IfBlock):
+
+    MAGIC_WORD = "while"
+
+
 class Func(Block):
 
     def __init__(self, decl, code=None):
