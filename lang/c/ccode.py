@@ -23,9 +23,26 @@ class Expr(Code):
         return [cls(part.strip()) for part in text.split(";") if part]
 
 
+class Variable(Expr):
+
+    def __init__(self, decl, value=None):
+        self.decl = decl
+        self.value = value
+        self.expr = str(decl)
+
+    def _act(self, source):
+        Expr._act(self, source)
+        if self.value is not None:
+            source.write(" = ")
+            self.value._act(source)
+
+
 class Block(Code):
 
-    def __init__(self, code=None):
+    def __init__(self, variables=None, code=None):
+        if variables is None:
+            variables = []
+        self.vars = variables
         if code is None:
             code = []
         self.code = code
@@ -33,18 +50,33 @@ class Block(Code):
     def add_code(self, code):
         self.code.append(code)
 
+    def add_var(self, var):
+        self.vars.append(var)
+
+    @staticmethod
+    def _part_act(part, source):
+        part._act(source)
+        if isinstance(part, Expr):
+            source.writeline(";")
+
     def _act(self, source):
         source.writeline("{")
         source.indent()
+        for part in self.vars:
+            self._part_act(part, source)
+        if self.vars:
+            source.linefeed()
         for part in self.code:
-            part._act(source)
-            if isinstance(part, Expr):
-                source.writeline(";")
+            self._part_act(part, source)
         source.dedent()
         source.writeline("}")
 
     def __repr__(self):
-        return "{}({!r})".format(_cls_repr(type(self)), self.code)
+        return "{}({!r}, {!r})".format(
+            _cls_repr(type(self)),
+            self.vars,
+            self.code,
+        )
 
 
 class IfBlock(Block):
@@ -62,9 +94,10 @@ class IfBlock(Block):
         Block._act(self, source)
 
     def __repr__(self):
-        return "{}({!r}, {!r})".format(
+        return "{}({!r}, {!r}, {!r})".format(
             _cls_repr(type(self)),
-            self.decl,
+            self.cond,
+            self.vars,
             self.code,
         )
 
@@ -85,8 +118,9 @@ class Func(Block):
         Block._act(self, source)
 
     def __repr__(self):
-        return "{}({!r}, {!r})".format(
+        return "{}({!r}, {!r}, {!r})".format(
             _cls_repr(type(self)),
             self.decl,
+            self.vars,
             self.code,
         )
