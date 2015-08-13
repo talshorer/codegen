@@ -1,5 +1,7 @@
 #! /usr/bin/python3
 
+import string
+
 from codegen.core.code import Code
 
 
@@ -22,12 +24,24 @@ class Expr(CCode):
     def __repr__(self):
         return "{}({!r})".format(_cls_repr(type(self)), self.expr)
 
+    _IDENTIFIER_CHARS = string.digits + string.ascii_letters + "_"
+
+    # set to a boolean value if the same behaviour is always wanted
+    PARENTHESES_BEHAVIOUR = None
+
+    def needs_parentheses(self):
+        if self.PARENTHESES_BEHAVIOUR is not None:
+            return self.PARENTHESES_BEHAVIOUR
+        return not all(c in self._IDENTIFIER_CHARS for c in self.expr)
+
     @classmethod
     def exprs_from_text(cls, text):
         return [cls(part.strip()) for part in text.split(";") if part]
 
 
 class Variable(Expr):
+
+    PARENTHESES_BEHAVIOUR = False
 
     def __init__(self, decl, value=None):
         self.decl = decl
@@ -44,6 +58,7 @@ class Variable(Expr):
 class _BinaryOperation(Expr):
 
     OP = None
+    PARENTHESES_BEHAVIOUR = True
 
     def __init__(self, left, right):
         if self.OP is None:
@@ -52,11 +67,19 @@ class _BinaryOperation(Expr):
         self.right = right
 
     def _act(self, source):
-        source.write("(")
+        left_needs_parentheses = self.left.needs_parentheses()
+        right_needs_parentheses = self.right.needs_parentheses()
+        if left_needs_parentheses:
+            source.write("(")
         self.left._act(source)
-        source.write(") {} (".format(self.OP))
+        if left_needs_parentheses:
+            source.write(")")
+        source.write(" {} ".format(self.OP))
+        if right_needs_parentheses:
+            source.write("(")
         self.right._act(source)
-        source.write(")")
+        if right_needs_parentheses:
+            source.write(")")
 
 
 def _create_binary_operation(name, op):
@@ -68,6 +91,15 @@ Subtraction = _create_binary_operation("Subtraction", "-")
 Multiplication = _create_binary_operation("Multiplication", "*")
 Division = _create_binary_operation("Division", "/")
 Modulo = _create_binary_operation("Modulo", "%")
+Assignment = _create_binary_operation("Assignment", "=")
+AssignmentAddition = _create_binary_operation("AssignmentAddition", "+=")
+AssignmentSubtraction = _create_binary_operation("AssignmentSubtraction", "-=")
+AssignmentMultiplication = _create_binary_operation(
+    "AssignmentMultiplication",
+    "*",
+)
+AssignmentDivision = _create_binary_operation("AssignmentDivision", "/=")
+AssignmentModulo = _create_binary_operation("AssignmentModulo", "%=")
 
 
 class Block(CCode):
@@ -140,6 +172,8 @@ class WhileLoop(IfBlock):
 
 
 class FuncCall(Expr):
+
+    PARENTHESES_BEHAVIOUR = False
 
     def __init__(self, funcname, args):
         self.funcname = funcname
