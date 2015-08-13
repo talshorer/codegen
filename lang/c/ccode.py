@@ -34,7 +34,7 @@ class Variable(Expr):
         self.value = value
         self.expr = str(decl)
 
-    def _act(self, source):
+    def _var_act(self, source):
         Expr._act(self, source)
         if self.value is not None:
             source.write(" = ")
@@ -58,19 +58,19 @@ class Block(CCode):
         self.vars.append(var)
 
     @staticmethod
-    def _parts_act(parts, source):
+    def _parts_act(source, parts, attr="_act"):
         for part in parts:
-            part._act(source)
+            getattr(part, attr)(source)
             if isinstance(part, Expr):
                 source.writeline(";")
 
     def _act(self, source):
         source.writeline("{")
         source.indent()
-        self._parts_act(self.vars, source)
+        self._parts_act(source, self.vars, attr="_var_act")
         if self.vars:
             source.linefeed()
-        self._parts_act(self.code, source)
+        self._parts_act(source, self.code)
         source.dedent()
         source.writeline("}")
 
