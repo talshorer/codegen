@@ -104,6 +104,9 @@ AssignmentModulo = _create_binary_operation("AssignmentModulo", "%=")
 
 class Block(CCode):
 
+    # set to a boolean value if the same behaviour is always wanted
+    BRACELETS_BEHAVIOUR = None
+
     def __init__(self, variables=None, code=None):
         if variables is None:
             variables = []
@@ -125,15 +128,29 @@ class Block(CCode):
             if isinstance(part, Expr):
                 source.writeline(";")
 
+    def needs_bracelets(self):
+        if self.BRACELETS_BEHAVIOUR is not None:
+            return self.BRACELETS_BEHAVIOUR
+        return len(self.vars) != 0 or len(self.code) != 1
+
     def _act(self, source):
-        source.writeline("{")
+        needs_bracelets = self.needs_bracelets()
+        if needs_bracelets:
+            # not a new line, add a space before the bracelet
+            if source._indented:
+                source.write(" ")
+            source.writeline("{")
+        else:
+            # start the block on a new line
+            source.linefeed()
         source.indent()
         self._parts_act(source, self.vars, attr="_var_act")
         if self.vars:
             source.linefeed()
         self._parts_act(source, self.code)
         source.dedent()
-        source.writeline("}")
+        if needs_bracelets:
+            source.writeline("}")
 
     def __repr__(self):
         return "{}({!r}, {!r})".format(
@@ -154,7 +171,7 @@ class IfBlock(Block):
     def _act(self, source):
         source.write("{} (".format(self.MAGIC_WORD))
         self.cond._act(source)
-        source.write(") ")
+        source.write(")")
         Block._act(self, source)
 
     def __repr__(self):
@@ -191,6 +208,8 @@ class FuncCall(Expr):
 
 
 class Func(Block):
+
+    BRACELETS_BEHAVIOUR = True
 
     def __init__(self, decl, *args, **kw):
         self.decl = decl
