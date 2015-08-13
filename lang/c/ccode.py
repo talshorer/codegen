@@ -58,20 +58,19 @@ class Block(CCode):
         self.vars.append(var)
 
     @staticmethod
-    def _part_act(part, source):
-        part._act(source)
-        if isinstance(part, Expr):
-            source.writeline(";")
+    def _parts_act(parts, source):
+        for part in parts:
+            part._act(source)
+            if isinstance(part, Expr):
+                source.writeline(";")
 
     def _act(self, source):
         source.writeline("{")
         source.indent()
-        for part in self.vars:
-            self._part_act(part, source)
+        self._parts_act(self.vars, source)
         if self.vars:
             source.linefeed()
-        for part in self.code:
-            self._part_act(part, source)
+        self._parts_act(self.code, source)
         source.dedent()
         source.writeline("}")
 
