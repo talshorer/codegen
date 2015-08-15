@@ -5,6 +5,7 @@ import collections
 SourceConfig = collections.namedtuple("SourceFileConfig", [
     "stream",
     "indentation",
+    "seperate_elements",
 ])
 
 
@@ -43,3 +44,5 @@ class Source(object):
     def make(self):
         for element in self._elements:
             element._act(self)
+            if self.config.seperate_elements:
+                self.linefeed()
