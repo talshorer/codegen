@@ -11,6 +11,12 @@ class CDecl(object):
         return self.ctype._make(self.name)
 
 
+class NamelessArg(CDecl):
+
+    def __init__(self, ctype):
+        CDecl.__init__(self, ctype, "")
+
+
 class _CType(object):
 
     def _make(self):
@@ -26,16 +32,7 @@ class Primitive(_CType):
         self.typename = typename
 
     def _make(self, decl):
-        return "{} {}".format(self.typename, decl)
-
-
-class NamelessArg(CDecl):
-
-    def __init__(self, ctype):
-        self.ctype = ctype
-
-    def __str__(self):
-        return self.ctype.typename
+        return " ".join(s for s in (self.typename, decl) if s)
 
 
 void_args = (NamelessArg(Primitive("void")),)
