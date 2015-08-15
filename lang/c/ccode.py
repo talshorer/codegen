@@ -5,10 +5,6 @@ import string
 from codegen.core.code import Code
 
 
-def _cls_repr(cls):
-    return "{}.{}".format(cls.__module__, cls.__name__)
-
-
 class CCode(Code):
     pass
 
@@ -20,9 +16,6 @@ class Expr(CCode):
 
     def _act(self, source):
         source.write(self.expr)
-
-    def __repr__(self):
-        return "{}({!r})".format(_cls_repr(type(self)), self.expr)
 
     _IDENTIFIER_CHARS = string.digits + string.ascii_letters + "_"
 
@@ -202,13 +195,6 @@ class Block(CCode):
         if needs_bracelets:
             source.writeline("}")
 
-    def __repr__(self):
-        return "{}({!r}, {!r})".format(
-            _cls_repr(type(self)),
-            self.vars,
-            self.code,
-        )
-
 
 class IfBlock(Block):
 
@@ -223,14 +209,6 @@ class IfBlock(Block):
         self.cond._act(source)
         source.write(")")
         Block._act(self, source)
-
-    def __repr__(self):
-        return "{}({!r}, {!r}, {!r})".format(
-            _cls_repr(type(self)),
-            self.cond,
-            self.vars,
-            self.code,
-        )
 
 
 class WhileLoop(IfBlock):
@@ -268,14 +246,6 @@ class Func(Block):
     def _act(self, source):
         source.writeline(str(self.decl))
         Block._act(self, source)
-
-    def __repr__(self):
-        return "{}({!r}, {!r}, {!r})".format(
-            _cls_repr(type(self)),
-            self.decl,
-            self.vars,
-            self.code,
-        )
 
     def make_func_call(self, args):
         return FuncCall(self.decl.name, args)
