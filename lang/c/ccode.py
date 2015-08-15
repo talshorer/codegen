@@ -249,17 +249,13 @@ class Func(Block):
         return FuncCall(self.decl.name, args)
 
 
-class Cast(CCode):
+class Cast(_UnaryOperation):
 
     PARENTHESES_BEHAVIOUR = True
 
     def __init__(self, casttype, value):
-        self.castdecl = cdecl.NamelessArg(casttype)
-        self.value = value
-
-    def _act(self, source):
-        source.write("({})".format(self.castdecl))
-        self.value._act_with_parentheses(source)
+        self.OP = "({})".format(cdecl.NamelessArg(casttype))
+        _UnaryOperation.__init__(self, value)
 
 
 class Subscript(CCode):
