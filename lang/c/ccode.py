@@ -136,6 +136,7 @@ PreIncrement = _create_unary_operation("PreIncrement", "++")
 PreDecrement = _create_unary_operation("PreDecrement", "--")
 PostIncrement = _create_unary_operation("PostIncrement", "++", True)
 PostDecrement = _create_unary_operation("PostDecrement", "--", True)
+Return = _create_unary_operation("Return", "return ")
 
 
 class Block(CCode):
@@ -210,6 +211,7 @@ class WhileLoop(IfBlock):
     MAGIC_WORD = "while"
 
 
+# TODO allow calling pointers to functions
 class FuncCall(CCode):
 
     PARENTHESES_BEHAVIOUR = False
