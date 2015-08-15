@@ -20,8 +20,8 @@ class CCode(Code):
             return self.PARENTHESES_BEHAVIOUR
         return not all(c in self._IDENTIFIER_CHARS for c in self.expr)
 
-    def _act_with_parentheses(self, source):
-        needs_parentheses = self.needs_parentheses()
+    def _act_with_parentheses(self, source, force=False):
+        needs_parentheses = True if force else self.needs_parentheses()
         if needs_parentheses:
             source.write("(")
         self._act(source)
@@ -260,3 +260,20 @@ class Cast(CCode):
     def _act(self, source):
         source.write("({})".format(self.castdecl))
         self.value._act_with_parentheses(source)
+
+
+class Subscript(CCode):
+
+    PARENTHESES_BEHAVIOUR = False
+
+    def __init__(self, arr, index):
+        self.arr = arr
+        self.index = index
+
+    def _act(self, source):
+        # unary operations always need parentheses when subscripted
+        force_parentheses = isinstance(self.arr, _UnaryOperation)
+        self.arr._act_with_parentheses(source, force_parentheses)
+        source.write("[")
+        self.index._act(source)
+        source.write("]")
