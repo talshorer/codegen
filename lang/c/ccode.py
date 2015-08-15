@@ -11,6 +11,8 @@ class CCode(Code):
     PARENTHESES_BEHAVIOUR = None
     SEMICOLON_BEHAVIOUR = True
 
+    _IDENTIFIER_CHARS = string.digits + string.ascii_letters + "_"
+
     def needs_parentheses(self):
         if self.PARENTHESES_BEHAVIOUR is not None:
             return self.PARENTHESES_BEHAVIOUR
@@ -32,8 +34,6 @@ class Expr(CCode):
 
     def _act(self, source):
         source.write(self.expr)
-
-    _IDENTIFIER_CHARS = string.digits + string.ascii_letters + "_"
 
     @classmethod
     def exprs_from_text(cls, text):
