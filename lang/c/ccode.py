@@ -4,6 +4,8 @@ import string
 
 from codegen.core.code import Code
 
+from . import cdecl
+
 
 class CCode(Code):
 
@@ -245,3 +247,16 @@ class Func(Block):
 
     def make_func_call(self, args):
         return FuncCall(self.decl.name, args)
+
+
+class Cast(CCode):
+
+    PARENTHESES_BEHAVIOUR = True
+
+    def __init__(self, casttype, value):
+        self.castdecl = cdecl.NamelessArg(casttype)
+        self.value = value
+
+    def _act(self, source):
+        source.write("({})".format(self.castdecl))
+        self.value._act_with_parentheses(source)
