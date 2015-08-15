@@ -38,16 +38,23 @@ class Primitive(_CType):
 void_args = (NamelessArg(Primitive("void")),)
 
 
+class _SuffixType(_CType):
+    pass
+
+
 class Pointer(_CType):
 
     def __init__(self, ptype):
         self.ptype = ptype
 
     def _make(self, decl):
-        return self.ptype._make("(*{})".format(decl))
+        base_fmt = "*{}".format(format(decl))
+        if isinstance(self.ptype, _SuffixType):
+            base_fmt = "({})".format(base_fmt)
+        return self.ptype._make(base_fmt)
 
 
-class Array(_CType):
+class Array(_SuffixType):
 
     def __init__(self, etype, size):
         self.etype = etype
@@ -57,7 +64,7 @@ class Array(_CType):
         return self.etype._make("{}[{}]".format(decl, self.size))
 
 
-class Func(_CType):
+class Func(_SuffixType):
 
     def __init__(self, rettype, args):
         self.rettype = rettype
