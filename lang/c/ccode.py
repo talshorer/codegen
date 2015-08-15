@@ -16,6 +16,14 @@ class CCode(Code):
             return self.PARENTHESES_BEHAVIOUR
         return not all(c in self._IDENTIFIER_CHARS for c in self.expr)
 
+    def _act_with_parentheses(self, source):
+        needs_parentheses = self.needs_parentheses()
+        if needs_parentheses:
+            source.write("(")
+        self._act(source)
+        if needs_parentheses:
+            source.write(")")
+
 
 class Expr(CCode):
 
@@ -60,19 +68,9 @@ class _BinaryOperation(CCode):
         self.right = right
 
     def _act(self, source):
-        left_needs_parentheses = self.left.needs_parentheses()
-        right_needs_parentheses = self.right.needs_parentheses()
-        if left_needs_parentheses:
-            source.write("(")
-        self.left._act(source)
-        if left_needs_parentheses:
-            source.write(")")
+        self.left._act_with_parentheses(source)
         source.write(" {} ".format(self.OP))
-        if right_needs_parentheses:
-            source.write("(")
-        self.right._act(source)
-        if right_needs_parentheses:
-            source.write(")")
+        self.right._act_with_parentheses(source)
 
 
 def _create_binary_operation(name, op):
@@ -120,12 +118,7 @@ class _UnaryOperation(CCode):
     def _act(self, source):
         if not self.IS_SUFFIX:
             source.write(self.OP)
-        operand_needs_parentheses = self.operand.needs_parentheses()
-        if operand_needs_parentheses:
-            source.write("(")
-        self.operand._act(source)
-        if operand_needs_parentheses:
-            source.write(")")
+        self.operand._act_with_parentheses(source)
         if self.IS_SUFFIX:
             source.write(self.OP)
 
