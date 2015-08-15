@@ -6,7 +6,15 @@ from codegen.core.code import Code
 
 
 class CCode(Code):
-    pass
+
+    # set to a boolean value if the same behaviour is always wanted
+    PARENTHESES_BEHAVIOUR = None
+    SEMICOLON_BEHAVIOUR = True
+
+    def needs_parentheses(self):
+        if self.PARENTHESES_BEHAVIOUR is not None:
+            return self.PARENTHESES_BEHAVIOUR
+        return not all(c in self._IDENTIFIER_CHARS for c in self.expr)
 
 
 class Expr(CCode):
@@ -18,14 +26,6 @@ class Expr(CCode):
         source.write(self.expr)
 
     _IDENTIFIER_CHARS = string.digits + string.ascii_letters + "_"
-
-    # set to a boolean value if the same behaviour is always wanted
-    PARENTHESES_BEHAVIOUR = None
-
-    def needs_parentheses(self):
-        if self.PARENTHESES_BEHAVIOUR is not None:
-            return self.PARENTHESES_BEHAVIOUR
-        return not all(c in self._IDENTIFIER_CHARS for c in self.expr)
 
     @classmethod
     def exprs_from_text(cls, text):
@@ -39,7 +39,7 @@ class Variable(Expr):
     def __init__(self, decl, value=None):
         self.decl = decl
         self.value = value
-        self.expr = decl.name  # for Expr._act
+        Expr.__init__(self, decl.name)
 
     def _var_act(self, source):
         source.write(str(self.decl))
@@ -48,7 +48,7 @@ class Variable(Expr):
             self.value._act(source)
 
 
-class _BinaryOperation(Expr):
+class _BinaryOperation(CCode):
 
     OP = None
     PARENTHESES_BEHAVIOUR = True
@@ -106,7 +106,7 @@ Or = _create_binary_operation("Or", "|")
 Xor = _create_binary_operation("Xor", "^")
 
 
-class _UnaryOperation(Expr):
+class _UnaryOperation(CCode):
 
     OP = None
     IS_SUFFIX = False
@@ -149,6 +149,7 @@ class Block(CCode):
 
     # set to a boolean value if the same behaviour is always wanted
     BRACELETS_BEHAVIOUR = None
+    SEMICOLON_BEHAVIOUR = False
 
     def __init__(self, variables=None, code=None):
         if variables is None:
@@ -168,7 +169,7 @@ class Block(CCode):
     def _parts_act(source, parts, attr="_act"):
         for part in parts:
             getattr(part, attr)(source)
-            if isinstance(part, Expr):
+            if part.SEMICOLON_BEHAVIOUR:
                 source.writeline(";")
 
     def needs_bracelets(self):
@@ -216,7 +217,7 @@ class WhileLoop(IfBlock):
     MAGIC_WORD = "while"
 
 
-class FuncCall(Expr):
+class FuncCall(CCode):
 
     PARENTHESES_BEHAVIOUR = False
 
