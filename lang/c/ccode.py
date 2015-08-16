@@ -57,6 +57,10 @@ class Variable(Expr):
             source.write(" = ")
             self.value._act(source)
 
+    @staticmethod
+    def to_args(variables):
+        return [var.decl for var in variables]
+
 
 class _BinaryOperation(CCode):
 
