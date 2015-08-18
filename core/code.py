@@ -14,3 +14,7 @@ class _EmptyLine(object):
 
 
 empty_line = _EmptyLine()
+
+
+class CodeError(Exception):
+    pass
