@@ -2,12 +2,12 @@
 
 import string
 
-from codegen.core.code import Code
+from codegen.core import code
 
 from . import cdecl
 
 
-class CCode(Code):
+class CCode(code.Code):
 
     # set to a boolean value if the same behaviour is always wanted
     PARENTHESES_BEHAVIOUR = None
@@ -150,6 +150,10 @@ class Block(CCode):
     # set to a boolean value if the same behaviour is always wanted
     BRACELETS_BEHAVIOUR = None
     SEMICOLON_BEHAVIOUR = False
+    # only valid if self.needs_bracelets()
+    END_WITH_LINEFEED = True
+    # only valid if not self.needs_bracelets()
+    START_ON_NEWLINE = True
 
     def __init__(self, variables=None, code=None):
         if variables is None:
@@ -177,42 +181,89 @@ class Block(CCode):
             return self.BRACELETS_BEHAVIOUR
         return len(self.vars) != 0 or len(self.code) != 1
 
-    def _act(self, source):
-        needs_bracelets = self.needs_bracelets()
+    def _act(self, source, force_bracelets=False):
+        needs_bracelets = force_bracelets or self.needs_bracelets()
+        do_indent = True
         if needs_bracelets:
             # not a new line, add a space before the bracelet
             if source._indented:
                 source.write(" ")
             source.writeline("{")
-        else:
-            # start the block on a new line
+        elif self.START_ON_NEWLINE:
             source.linefeed()
-        source.indent()
+        else:  # seperate code from last element
+            source.write(" ")
+            do_indent = False
+        if do_indent:
+            source.indent()
         self._parts_act(source, self.vars, attr="_var_act")
         if self.vars:
             source.linefeed()
         self._parts_act(source, self.code)
-        source.dedent()
+        if do_indent:
+            source.dedent()
         if needs_bracelets:
-            source.writeline("}")
+            source.write("}")
+            if self.END_WITH_LINEFEED:
+                source.linefeed()
 
 
-class IfBlock(Block):
+class _CondBlock(Block):
 
-    MAGIC_WORD = "if"
+    # Override this in child class
+    MAGIC_WORD = None
 
     def __init__(self, cond, *args, **kw):
+        if self.MAGIC_WORD is None:
+            raise NotImplementedError("This is an abstract class")
         self.cond = cond
         Block.__init__(self, *args, **kw)
 
-    def _act(self, source):
+    def _act(self, source, *args, **kw):
         source.write("{} (".format(self.MAGIC_WORD))
         self.cond._act(source)
         source.write(")")
+        Block._act(self, source, *args, **kw)
+
+
+class _ElseBlock(Block):
+
+    START_ON_NEWLINE = False
+
+    def needs_bracelets(self):
+        return Block.needs_bracelets(self) or type(self.code[0]) is not IfBlock
+
+    def _act(self, source):
+        source.write(" else")  # another space will be added by Block._act()
         Block._act(self, source)
 
 
-class WhileLoop(IfBlock):
+class IfBlock(_CondBlock):
+
+    MAGIC_WORD = "if"
+
+    def __init__(self, *args, **kw):
+        _CondBlock.__init__(self, *args, **kw)
+        self.elseb = None
+
+    def add_else(self, *args, **kw):
+        if self.elseb is not None:
+            msg = "Cannot attach multiple else blocks to a single if block"
+            raise code.CodeError(msg)
+        self.BRACELETS_BEHAVIOUR = True
+        self.END_WITH_LINEFEED = False
+        self.elseb = _ElseBlock(*args, **kw)
+        return self.elseb
+
+    def _act(self, source):
+        # if source line is already indented, we are part of an else-if
+        force_bracelets = source._indented
+        _CondBlock._act(self, source, force_bracelets)
+        if self.elseb:
+            self.elseb._act(source)
+
+
+class WhileLoop(_CondBlock):
 
     MAGIC_WORD = "while"
 
