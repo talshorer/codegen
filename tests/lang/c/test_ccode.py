@@ -283,3 +283,9 @@ class TestFunc(CCodeTest):
     def test_to_expr(self):
         expr = ccode.Func(cdecl.Func(ct_int, cdecl.void_args)("a")).to_expr()
         self.check_gen(expr, "a")
+
+
+class TestCast(CCodeTest):
+
+    def test_cast(self):
+        self.check_gen(ccode.Cast(ct_int, dummy), "(int)dummy")
