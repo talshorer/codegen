@@ -250,3 +250,12 @@ class TestIfBlock(CCodeTest):
         with self.assertRaises(code.CodeError):
             ifb.add_else(ccode.ElseBlock())
         self.check_simple_if_else(ifb)
+
+
+class TestWhileLoop(CCodeTest):
+
+    def test_while(self):
+        self.check_gen(ccode.WhileLoop(dummy), (
+            "while (dummy) {\n"
+            "}\n"
+        ))
