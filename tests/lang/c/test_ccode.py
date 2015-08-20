@@ -289,3 +289,14 @@ class TestCast(CCodeTest):
 
     def test_cast(self):
         self.check_gen(ccode.Cast(ct_int, dummy), "(int)dummy")
+
+
+class TestSubscript(CCodeTest):
+
+    def test_subscript_simple(self):
+        call = ccode.Subscript(dummy, dummy)
+        self.check_gen(call, "dummy[dummy]")
+
+    def test_subsript_unary_operation(self):
+        element = ccode.Subscript(ccode.Dereference(dummy), dummy)
+        self.check_gen(element, "(*dummy)[dummy]")
