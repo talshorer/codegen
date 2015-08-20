@@ -157,7 +157,7 @@ class Block(CCode):
     SEMICOLON_BEHAVIOUR = False
     # only valid if self.needs_bracelets()
     END_WITH_LINEFEED = True
-    # only valid if not self.needs_bracelets()
+    # only valid if not self.needs_bracelets() and source._indented
     START_ON_NEWLINE = True
 
     def __init__(self, variables=None, code=None):
@@ -194,11 +194,12 @@ class Block(CCode):
             if source._indented:
                 source.write(" ")
             source.writeline("{")
-        elif self.START_ON_NEWLINE:
-            source.linefeed()
-        else:  # seperate code from last element
-            source.write(" ")
-            do_indent = False
+        elif source._indented:
+            if self.START_ON_NEWLINE:
+                source.linefeed()
+            else:  # seperate code from last element
+                source.write(" ")
+                do_indent = False
         if do_indent:
             source.indent()
         self._parts_act(source, self.vars, attr="_var_act")

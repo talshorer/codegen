@@ -131,10 +131,7 @@ class TestBlock(CCodeTest):
         ))
 
     def test_block_with_single_expression(self):
-        self.check_gen(ccode.Block(code=[dummy]), (
-            "\n"
-            "\tdummy;\n"
-        ))
+        self.check_gen(ccode.Block(code=[dummy]), "\tdummy;\n")
 
     def test_block_with_multiple_expressions(self):
         self.check_gen(ccode.Block(code=[dummy, dummy]), (
@@ -167,10 +164,7 @@ class TestBlock(CCodeTest):
     def test_add_code(self):
         block = ccode.Block()
         block.add_code(dummy)
-        self.check_gen(block, (
-            "\n"
-            "\tdummy;\n"
-        ))
+        self.check_gen(block, "\tdummy;\n")
 
     def test_add_var(self):
         block = ccode.Block()
