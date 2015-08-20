@@ -108,6 +108,8 @@ RightShift = _create_binary_operation("RightShift", ">>")
 And = _create_binary_operation("And", "&")
 Or = _create_binary_operation("Or", "|")
 Xor = _create_binary_operation("Xor", "^")
+LogicalAnd = _create_binary_operation("LogicalAnd", "&&")
+LogicalOr = _create_binary_operation("LogicalOr", "||")
 
 
 class _UnaryOperation(CCode):

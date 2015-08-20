@@ -74,6 +74,8 @@ class TestBinaryOperation(CCodeTest):
             ccode.And,
             ccode.Or,
             ccode.Xor,
+            ccode.LogicalAnd,
+            ccode.LogicalOr,
         ]:
             self.check_gen(op(dummy, dummy), "dummy {} dummy".format(op.OP))
 
