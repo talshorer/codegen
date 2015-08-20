@@ -22,3 +22,13 @@ class TestExpr(CCodeTest):
 
     def test_simple_expr(self):
         self.check_gen(dummy, "dummy")
+
+    def test_parentheses_on_simple_expr(self):
+        self.check_gen(dummy, "dummy", action="_act_with_parentheses")
+
+    def test_parentheses_on_complex_expr(self):
+        self.check_gen(
+            ccode.Expr("0 + 1"),
+            "(0 + 1)",
+            action="_act_with_parentheses",
+        )
