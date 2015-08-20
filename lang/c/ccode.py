@@ -228,7 +228,7 @@ class _CondBlock(Block):
         Block._act(self, source, *args, **kw)
 
 
-class _ElseBlock(Block):
+class ElseBlock(Block):
 
     START_ON_NEWLINE = False
 
@@ -244,18 +244,19 @@ class IfBlock(_CondBlock):
 
     MAGIC_WORD = "if"
 
-    def __init__(self, *args, **kw):
+    def __init__(self, *args, elseb=None, **kw):
         _CondBlock.__init__(self, *args, **kw)
         self.elseb = None
+        if elseb is not None:
+            self.add_else(elseb)
 
-    def add_else(self, *args, **kw):
+    def add_else(self, elseb):
         if self.elseb is not None:
             msg = "Cannot attach multiple else blocks to a single if block"
             raise code.CodeError(msg)
         self.BRACELETS_BEHAVIOUR = True
         self.END_WITH_LINEFEED = False
-        self.elseb = _ElseBlock(*args, **kw)
-        return self.elseb
+        self.elseb = elseb
 
     def _act(self, source):
         # if source line is already indented, we are part of an else-if
