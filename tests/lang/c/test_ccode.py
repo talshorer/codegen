@@ -4,7 +4,7 @@ import unittest
 import io
 
 from codegen.lang.c import ccode, cdecl, csource
-from codegen.core import source
+from codegen.core import source, code
 
 dummy = ccode.Expr("dummy")
 dummy_parentheses = ccode.Expr("0 + 1")
@@ -181,3 +181,72 @@ class TestBlock(CCodeTest):
             "\n"
             "}\n"
         ))
+
+
+class TestIfBlock(CCodeTest):
+
+    def test_if(self):
+        self.check_gen(ccode.IfBlock(dummy), (
+            "if (dummy) {\n"
+            "}\n"
+        ))
+
+    def check_simple_if_else(self, element):
+        self.check_gen(element, (
+            "if (dummy) {\n"
+            "} else {\n"
+            "}\n"
+        ))
+
+    def test_if_else(self):
+        ifb = ccode.IfBlock(dummy, elseb=ccode.ElseBlock())
+        self.check_simple_if_else(ifb)
+
+    def test_if_else_with_single_expression(self):
+        elseb = ccode.ElseBlock()
+        self.check_gen(ccode.IfBlock(dummy, code=[dummy], elseb=elseb), (
+            "if (dummy) {\n"
+            "\tdummy;\n"
+            "} else {\n"
+            "}\n"
+        ))
+
+    def test_if_else_if(self):
+        elseb = ccode.ElseBlock(code=[ccode.IfBlock(dummy)])
+        self.check_gen(ccode.IfBlock(dummy, elseb=elseb), (
+            "if (dummy) {\n"
+            "} else if (dummy) {\n"
+            "}\n"
+        ))
+
+    def test_if_else_with_multiple_expressions_in_else(self):
+        elseb = ccode.ElseBlock(code=[ccode.IfBlock(dummy), dummy])
+        self.check_gen(ccode.IfBlock(dummy, elseb=elseb), (
+            "if (dummy) {\n"
+            "} else {\n"
+            "\tif (dummy) {\n"
+            "\t}\n"
+            "\tdummy;\n"
+            "}\n"
+        ))
+
+    def test_if_else_if_else(self):
+        elseb = ccode.ElseBlock()
+        elseifb = ccode.ElseBlock(code=[ccode.IfBlock(dummy, elseb=elseb)])
+        self.check_gen(ccode.IfBlock(dummy, elseb=elseifb), (
+            "if (dummy) {\n"
+            "} else if (dummy) {\n"
+            "} else {\n"
+            "}\n"
+        ))
+
+    def test_add_else(self):
+        ifb = ccode.IfBlock(dummy)
+        ifb.add_else(ccode.ElseBlock())
+        self.check_simple_if_else(ifb)
+
+    def test_add_else_with_existing_else(self):
+        ifb = ccode.IfBlock(dummy, elseb=ccode.ElseBlock())
+        with self.assertRaises(code.CodeError):
+            ifb.add_else(ccode.ElseBlock())
+        self.check_simple_if_else(ifb)
