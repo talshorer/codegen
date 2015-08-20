@@ -3,10 +3,11 @@
 import unittest
 import io
 
-from codegen.lang.c import ccode, csource
+from codegen.lang.c import ccode, cdecl, csource
 from codegen.core import source
 
 dummy = ccode.Expr("dummy")
+ct_int = cdecl.Primitive("int")
 
 
 class CCodeTest(unittest.TestCase):
@@ -32,3 +33,23 @@ class TestExpr(CCodeTest):
             "(0 + 1)",
             action="_act_with_parentheses",
         )
+
+
+class TestVariable(CCodeTest):
+
+    def test_variable_name(self):
+        decl = ct_int("a")
+        self.check_gen(ccode.Variable(decl), "a")
+
+    def test_variable_name_with_initial(self):
+        decl = ct_int("a")
+        self.check_gen(ccode.Variable(decl, dummy), "a")
+
+    def test_variable_definition(self):
+        decl = ct_int("a")
+        self.check_gen(ccode.Variable(decl), "int a", action="_var_act")
+
+    def test_variable_definition_with_initial(self):
+        decl = ct_int("a")
+        var = ccode.Variable(decl, dummy)
+        self.check_gen(var, "int a = dummy", action="_var_act")
