@@ -259,3 +259,19 @@ class TestWhileLoop(CCodeTest):
             "while (dummy) {\n"
             "}\n"
         ))
+
+
+class TestCall(CCodeTest):
+
+    def test_call_no_params(self):
+        self.check_gen(ccode.Call(dummy, []), "dummy()")
+
+    def test_call_one_param(self):
+        self.check_gen(ccode.Call(dummy, [dummy]), "dummy(dummy)")
+
+    def test_call_multiple_params(self):
+        call = ccode.Call(dummy, [dummy, dummy])
+        self.check_gen(call, "dummy(dummy, dummy)")
+
+    def test_call_unary_operation(self):
+        self.check_gen(ccode.Call(ccode.Dereference(dummy), []), "(*dummy)()")
