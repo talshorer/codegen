@@ -275,3 +275,17 @@ class TestCall(CCodeTest):
 
     def test_call_unary_operation(self):
         self.check_gen(ccode.Call(ccode.Dereference(dummy), []), "(*dummy)()")
+
+
+class TestFunc(CCodeTest):
+
+    def test_simple_func(self):
+        self.check_gen(ccode.Func(cdecl.Func(ct_int, cdecl.void_args)("a")), (
+            "int a(void)\n"
+            "{\n"
+            "}\n"
+        ))
+
+    def test_to_expr(self):
+        expr = ccode.Func(cdecl.Func(ct_int, cdecl.void_args)("a")).to_expr()
+        self.check_gen(expr, "a")
