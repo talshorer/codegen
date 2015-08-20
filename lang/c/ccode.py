@@ -7,18 +7,19 @@ from codegen.core import code
 from . import cdecl
 
 
-class CCode(code.Code):
+class _CCode(code.Code):
 
-    # set to a boolean value if the same behaviour is always wanted
+    # set to a boolean value or override get_parentheses_behaviour
     PARENTHESES_BEHAVIOUR = None
     SEMICOLON_BEHAVIOUR = True
 
-    _IDENTIFIER_CHARS = string.digits + string.ascii_letters + "_"
-
     def needs_parentheses(self):
-        if self.PARENTHESES_BEHAVIOUR is not None:
-            return self.PARENTHESES_BEHAVIOUR
-        return not all(c in self._IDENTIFIER_CHARS for c in self.expr)
+        if self.PARENTHESES_BEHAVIOUR is None:
+            return self.get_parentheses_behaviour()
+        return self.PARENTHESES_BEHAVIOUR
+
+    def get_parentheses_behaviour(self):
+        raise NotImplementedError("This is an abstract class")
 
     def _act_with_parentheses(self, source, force=False):
         needs_parentheses = True if force else self.needs_parentheses()
@@ -32,13 +33,18 @@ class CCode(code.Code):
         self._act_with_parentheses(source, isinstance(self, _UnaryOperation))
 
 
-class Expr(CCode):
+class Expr(_CCode):
 
     def __init__(self, expr):
         self.expr = expr
 
     def _act(self, source):
         source.write(self.expr)
+
+    _IDENTIFIER_CHARS = string.digits + string.ascii_letters + "_"
+
+    def get_parentheses_behaviour(self):
+        return not all(c in self._IDENTIFIER_CHARS for c in self.expr)
 
     @classmethod
     def exprs_from_text(cls, text):
@@ -65,7 +71,7 @@ class Variable(Expr):
         return [var.decl for var in variables]
 
 
-class _BinaryOperation(CCode):
+class _BinaryOperation(_CCode):
 
     OP = None
     PARENTHESES_BEHAVIOUR = True
@@ -115,7 +121,7 @@ LogicalAnd = _create_binary_operation("LogicalAnd", "&&")
 LogicalOr = _create_binary_operation("LogicalOr", "||")
 
 
-class _UnaryOperation(CCode):
+class _UnaryOperation(_CCode):
 
     OP = None
     IS_SUFFIX = False
@@ -150,7 +156,7 @@ PostDecrement = _create_unary_operation("PostDecrement", "--", True)
 Return = _create_unary_operation("Return", "return ")
 
 
-class Block(CCode):
+class Block(_CCode):
 
     # set to a boolean value if the same behaviour is always wanted
     BRACELETS_BEHAVIOUR = None
@@ -275,7 +281,7 @@ class WhileLoop(_CondBlock):
     MAGIC_WORD = "while"
 
 
-class Call(CCode):
+class Call(_CCode):
 
     PARENTHESES_BEHAVIOUR = False
 
@@ -321,7 +327,7 @@ class Cast(_UnaryOperation):
         _UnaryOperation.__init__(self, value)
 
 
-class Subscript(CCode):
+class Subscript(_CCode):
 
     PARENTHESES_BEHAVIOUR = False
 
