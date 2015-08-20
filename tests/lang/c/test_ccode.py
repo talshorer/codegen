@@ -91,3 +91,32 @@ class TestBinaryOperation(CCodeTest):
             ccode.Addition(dummy, dummy_parentheses),
             "dummy + (0 + 1)",
         )
+
+
+class TestUnaryOperation(CCodeTest):
+
+    def test_simple_prefix_unary_ops(self):
+        for op in [
+            ccode.BitNegation,
+            ccode.LogicalNot,
+            ccode.Minus,
+            ccode.AddressOf,
+            ccode.Dereference,
+            ccode.PreIncrement,
+            ccode.PreDecrement,
+            ccode.Return,
+        ]:
+            self.check_gen(op(dummy), "{}dummy".format(op.OP))
+
+    def test_prefix_unary_parentheses(self):
+        self.check_gen(ccode.PreIncrement(dummy_parentheses), "++(0 + 1)")
+
+    def test_simple_suffix_unary_ops(self):
+        for op in [
+            ccode.PostIncrement,
+            ccode.PostDecrement,
+        ]:
+            self.check_gen(op(dummy), "dummy{}".format(op.OP))
+
+    def test_suffix_unary_parentheses(self):
+        self.check_gen(ccode.PostIncrement(dummy_parentheses), "(0 + 1)++")
