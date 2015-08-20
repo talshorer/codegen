@@ -28,6 +28,9 @@ class CCode(code.Code):
         if needs_parentheses:
             source.write(")")
 
+    def _act_force_parentheses_on_unary(self, source):
+        self._act_with_parentheses(source, isinstance(self, _UnaryOperation))
+
 
 class Expr(CCode):
 
@@ -280,7 +283,8 @@ class Call(CCode):
         self.args = args
 
     def _act(self, source):
-        self.func._act(source)
+        # unary operations always need parentheses when called
+        self.func._act_force_parentheses_on_unary(source)
         source.write("(")
         first = True
         for arg in self.args:
@@ -326,8 +330,7 @@ class Subscript(CCode):
 
     def _act(self, source):
         # unary operations always need parentheses when subscripted
-        force_parentheses = isinstance(self.arr, _UnaryOperation)
-        self.arr._act_with_parentheses(source, force_parentheses)
+        self.arr._act_force_parentheses_on_unary(source)
         source.write("[")
         self.index._act(source)
         source.write("]")
