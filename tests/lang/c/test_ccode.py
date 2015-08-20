@@ -7,6 +7,7 @@ from codegen.lang.c import ccode, cdecl, csource
 from codegen.core import source
 
 dummy = ccode.Expr("dummy")
+dummy_parentheses = ccode.Expr("0 + 1")
 ct_int = cdecl.Primitive("int")
 
 
@@ -28,7 +29,7 @@ class TestExpr(CCodeTest):
         self.check_gen(dummy, "dummy", action="_act_with_parentheses")
 
     def test_parentheses_on_complex_expr(self):
-        expr = ccode.Expr("0 + 1")
+        expr = dummy_parentheses
         self.check_gen(expr, "(0 + 1)", action="_act_with_parentheses")
 
 
@@ -81,12 +82,12 @@ class TestBinaryOperation(CCodeTest):
 
     def test_binary_left_parentheses(self):
         self.check_gen(
-            ccode.Addition(ccode.Addition(dummy, dummy), dummy),
-            "(dummy + dummy) + dummy",
+            ccode.Addition(dummy_parentheses, dummy),
+            "(0 + 1) + dummy",
         )
 
     def test_binary_right_parentheses(self):
         self.check_gen(
-            ccode.Addition(dummy, ccode.Addition(dummy, dummy)),
-            "dummy + (dummy + dummy)",
+            ccode.Addition(dummy, dummy_parentheses),
+            "dummy + (0 + 1)",
         )
