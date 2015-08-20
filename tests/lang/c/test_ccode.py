@@ -46,3 +46,45 @@ class TestVariable(CCodeTest):
     def test_variable_definition_with_initial(self):
         var = ccode.Variable(ct_int("a"), dummy)
         self.check_gen(var, "int a = dummy", action="_var_act")
+
+
+class TestBinaryOperation(CCodeTest):
+
+    def test_simple_binary_ops(self):
+        for op in [
+            ccode.Addition,
+            ccode.Subtraction,
+            ccode.Multiplication,
+            ccode.Division,
+            ccode.Modulo,
+            ccode.Assignment,
+            ccode.AssignmentAddition,
+            ccode.AssignmentSubtraction,
+            ccode.AssignmentMultiplication,
+            ccode.AssignmentDivision,
+            ccode.AssignmentModulo,
+            ccode.Equal,
+            ccode.Unequal,
+            ccode.LessThan,
+            ccode.LessEqualThan,
+            ccode.GreaterThan,
+            ccode.GreaterEqualThan,
+            ccode.LeftShift,
+            ccode.RightShift,
+            ccode.And,
+            ccode.Or,
+            ccode.Xor,
+        ]:
+            self.check_gen(op(dummy, dummy), "dummy {} dummy".format(op.OP))
+
+    def test_binary_left_parentheses(self):
+        self.check_gen(
+            ccode.Addition(ccode.Addition(dummy, dummy), dummy),
+            "(dummy + dummy) + dummy",
+        )
+
+    def test_binary_right_parentheses(self):
+        self.check_gen(
+            ccode.Addition(dummy, ccode.Addition(dummy, dummy)),
+            "dummy + (dummy + dummy)",
+        )
