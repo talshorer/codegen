@@ -1,6 +1,7 @@
-PYTHON := python3
+PYTHON ?= python3
 
-export PYTHONPATH := $(PWD)/..
+PYTHONPATH += $(PWD)/..
+export PYTHONPATH
 
 test:
 	$(PYTHON) -m unittest discover -s tests -v
