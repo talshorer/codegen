@@ -268,17 +268,17 @@ class WhileLoop(_CondBlock):
     MAGIC_WORD = "while"
 
 
-# TODO allow calling pointers to functions
-class FuncCall(CCode):
+class Call(CCode):
 
     PARENTHESES_BEHAVIOUR = False
 
-    def __init__(self, funcname, args):
-        self.funcname = funcname
+    def __init__(self, func, args):
+        self.func = func
         self.args = args
 
     def _act(self, source):
-        source.write("{}(".format(self.funcname))
+        self.func._act(source)
+        source.write("(")
         first = True
         for arg in self.args:
             if not first:
@@ -300,8 +300,8 @@ class Func(Block):
         source.writeline(str(self.decl))
         Block._act(self, source)
 
-    def make_func_call(self, args):
-        return FuncCall(self.decl.name, args)
+    def to_expr(self):
+        return Expr(self.decl.name)
 
 
 class Cast(_UnaryOperation):
