@@ -120,3 +120,64 @@ class TestUnaryOperation(CCodeTest):
 
     def test_suffix_unary_parentheses(self):
         self.check_gen(ccode.PostIncrement(dummy_parentheses), "(0 + 1)++")
+
+
+class TestBlock(CCodeTest):
+
+    def test_empty_block(self):
+        self.check_gen(ccode.Block(), (
+            "{\n"
+            "}\n"
+        ))
+
+    def test_block_with_single_expression(self):
+        self.check_gen(ccode.Block(code=[dummy]), (
+            "\n"
+            "\tdummy;\n"
+        ))
+
+    def test_block_with_multiple_expressions(self):
+        self.check_gen(ccode.Block(code=[dummy, dummy]), (
+            "{\n"
+            "\tdummy;\n"
+            "\tdummy;\n"
+            "}\n"
+        ))
+
+    def test_block_with_single_variable_and_no_expressions(self):
+        self.check_gen(ccode.Block(variables=[ccode.Variable(ct_int("a"))]), (
+            "{\n"
+            "\tint a;\n"
+            "\n"
+            "}\n"
+        ))
+
+    def test_block_with_single_variable_and_single_expression(self):
+        self.check_gen(ccode.Block(
+            variables=[ccode.Variable(ct_int("a"))],
+            code=[dummy],
+        ), (
+            "{\n"
+            "\tint a;\n"
+            "\n"
+            "\tdummy;\n"
+            "}\n"
+        ))
+
+    def test_add_code(self):
+        block = ccode.Block()
+        block.add_code(dummy)
+        self.check_gen(block, (
+            "\n"
+            "\tdummy;\n"
+        ))
+
+    def test_add_var(self):
+        block = ccode.Block()
+        block.add_var(ccode.Variable(ct_int("a")))
+        self.check_gen(block, (
+            "{\n"
+            "\tint a;\n"
+            "\n"
+            "}\n"
+        ))
