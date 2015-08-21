@@ -10,10 +10,9 @@ SourceConfig = collections.namedtuple("SourceFileConfig", [
 
 class _SourceStream(object):
 
-    def __init__(self, config, stream, elements):
+    def __init__(self, config, stream):
         self.config = config
         self.stream = stream
-        self.elements = elements
         self._indent_level = 0
         self._indented = False
 
@@ -38,12 +37,6 @@ class _SourceStream(object):
         self.write(text)
         self.linefeed()
 
-    def __call__(self):
-        for element in self.elements:
-            element._act(self)
-            if self.config.seperate_elements:
-                self.linefeed()
-
 
 class Source(object):
 
@@ -55,4 +48,6 @@ class Source(object):
         self.elements.append(element)
 
     def make(self, stream):
-        return _SourceStream(self.config, stream, self.elements)()
+        source_stream = _SourceStream(self.config, stream)
+        for element in self.elements:
+            element._act(source_stream)

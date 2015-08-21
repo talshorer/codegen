@@ -15,7 +15,7 @@ class CCodeTest(unittest.TestCase):
 
     def check_gen(self, element, expected, action="_act"):
         stream = io.StringIO()
-        sourceobj = source._SourceStream(csource._config, stream, [])
+        sourceobj = source._SourceStream(csource._config, stream)
         getattr(element, action)(sourceobj)
         self.assertEqual(stream.getvalue(), expected)
 
