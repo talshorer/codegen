@@ -277,6 +277,22 @@ class WhileLoop(_CondBlock):
     MAGIC_WORD = "while"
 
 
+class ForLoop(_CondBlock):
+
+    MAGIC_WORD = "for"
+
+    class _ForCond(_CCode):
+
+        def __init__(self, *args):
+            self.args = args
+
+        def _act(self, source):
+            self._parts_act_with_seperator(source, self.args, "; ")
+
+    def __init__(self, init, cond, loop, *args, **kw):
+        _CondBlock.__init__(self, self._ForCond(init, cond, loop), *args, **kw)
+
+
 class Call(_CCode):
 
     PARENTHESES_BEHAVIOUR = False

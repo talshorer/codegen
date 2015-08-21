@@ -286,6 +286,15 @@ class TestWhileLoop(CCodeTest):
         ))
 
 
+class TestForLoop(CCodeTest):
+
+    def test_for(self):
+        self.check_gen(ccode.ForLoop(dummy, dummy, dummy), (
+            "for (dummy; dummy; dummy) {\n"
+            "}\n"
+        ))
+
+
 class TestCall(CCodeTest):
 
     def test_call_no_params(self):
