@@ -32,6 +32,14 @@ class _CCode(code.Code):
     def _act_force_parentheses_on_unary(self, source):
         self._act_with_parentheses(source, isinstance(self, _UnaryOperation))
 
+    def _parts_act_with_seperator(self, source, parts, sep):
+        first = True
+        for part in parts:
+            if not first:
+                source.write(sep)
+            first = False
+            part._act(source)
+
 
 class Expr(_CCode):
 
@@ -281,12 +289,7 @@ class Call(_CCode):
         # unary operations always need parentheses when called
         self.func._act_force_parentheses_on_unary(source)
         source.write("(")
-        first = True
-        for arg in self.args:
-            if not first:
-                source.write(", ")
-            first = False
-            arg._act(source)
+        self._parts_act_with_seperator(source, self.args, ", ")
         source.write(")")
 
 
