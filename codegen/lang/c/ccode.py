@@ -160,7 +160,7 @@ class Block(_CCode):
     # only valid if self.needs_bracelets()
     END_WITH_LINEFEED = True
     # only valid if not self.needs_bracelets() and source._indented
-    START_ON_NEWLINE = True
+    MUST_START_ON_NEWLINE = True
 
     def __init__(self, variables=None, code=None):
         if variables is None:
@@ -197,8 +197,9 @@ class Block(_CCode):
                 source.write(" ")
             source.writeline("{")
         elif source._indented:
-            if self.START_ON_NEWLINE:
-                source.linefeed()
+            if self.MUST_START_ON_NEWLINE:
+                msg = "A block that must start on a new line doesn't"
+                raise code.CodeError(msg)
             else:  # seperate code from last element
                 source.write(" ")
                 do_indent = False
@@ -236,7 +237,7 @@ class _CondBlock(Block):
 
 class ElseBlock(Block):
 
-    START_ON_NEWLINE = False
+    MUST_START_ON_NEWLINE = False
 
     def needs_bracelets(self):
         return Block.needs_bracelets(self) or type(self.code[0]) is not IfBlock
