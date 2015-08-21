@@ -46,10 +46,6 @@ class Expr(_CCode):
     def get_parentheses_behaviour(self):
         return not all(c in self._IDENTIFIER_CHARS for c in self.expr)
 
-    @classmethod
-    def exprs_from_text(cls, text):
-        return [cls(part.strip()) for part in text.split(";") if part]
-
 
 class Variable(Expr):
 
