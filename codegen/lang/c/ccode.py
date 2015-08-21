@@ -159,8 +159,6 @@ class Block(_CCode):
     SEMICOLON_BEHAVIOUR = False
     # only valid if self.needs_bracelets()
     END_WITH_LINEFEED = True
-    # only valid if not self.needs_bracelets() and source._indented
-    MUST_START_ON_NEWLINE = True
 
     def __init__(self, variables=None, code=None):
         if variables is None:
@@ -191,18 +189,12 @@ class Block(_CCode):
     def _act(self, source, force_bracelets=False):
         needs_bracelets = force_bracelets or self.needs_bracelets()
         do_indent = True
+        if source._indented:
+            # seperate code from last element
+            source.write(" ")
+            do_indent = needs_bracelets
         if needs_bracelets:
-            # not a new line, add a space before the bracelet
-            if source._indented:
-                source.write(" ")
             source.writeline("{")
-        elif source._indented:
-            if self.MUST_START_ON_NEWLINE:
-                msg = "A block that must start on a new line doesn't"
-                raise code.CodeError(msg)
-            else:  # seperate code from last element
-                source.write(" ")
-                do_indent = False
         if do_indent:
             source.indent()
         self._parts_act(source, self.vars, attr="_var_act")
@@ -236,8 +228,6 @@ class _CondBlock(Block):
 
 
 class ElseBlock(Block):
-
-    MUST_START_ON_NEWLINE = False
 
     def needs_bracelets(self):
         return Block.needs_bracelets(self) or type(self.code[0]) is not IfBlock
