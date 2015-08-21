@@ -11,6 +11,25 @@ dummy_parentheses = ccode.Expr("0 + 1")
 ct_int = cdecl.Primitive("int")
 
 
+class TestNotImplementedErrors(unittest.TestCase):
+
+    def test_ccode_get_parentheses_behaviour(self):
+        with self.assertRaises(NotImplementedError):
+            ccode._CCode().get_parentheses_behaviour()
+
+    def test_binary_operation_op(self):
+        with self.assertRaises(NotImplementedError):
+            ccode._BinaryOperation(None, None)
+
+    def test_unary_operation_op(self):
+        with self.assertRaises(NotImplementedError):
+            ccode._UnaryOperation(None)
+
+    def test_cond_block_magic_word(self):
+        with self.assertRaises(NotImplementedError):
+            ccode._CondBlock(None)
+
+
 class CCodeTest(unittest.TestCase):
 
     def check_gen(self, element, expected, action="_act"):
