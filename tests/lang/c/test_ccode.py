@@ -48,6 +48,11 @@ class TestVariable(CCodeTest):
         var = ccode.Variable(ct_int("a"), dummy)
         self.check_gen(var, "int a = dummy", action="_var_act")
 
+    def test_to_args(self):
+        decls = [ct_int("a"), ct_int("b")]
+        variables = [ccode.Variable(decl) for decl in decls]
+        self.assertEqual(ccode.Variable.to_args(variables), decls)
+
 
 class TestBinaryOperation(CCodeTest):
 
