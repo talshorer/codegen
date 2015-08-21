@@ -254,7 +254,8 @@ class IfBlock(_CondBlock):
 
     MAGIC_WORD = "if"
 
-    def __init__(self, *args, elseb=None, **kw):
+    def __init__(self, *args, **kw):
+        elseb = kw.pop("elseb", None)
         _CondBlock.__init__(self, *args, **kw)
         self.elseb = None
         if elseb is not None:
