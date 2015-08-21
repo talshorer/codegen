@@ -97,6 +97,13 @@ class TestBinaryOperation(CCodeTest):
             "dummy + (0 + 1)",
         )
 
+    def test_binary_parentheses(self):
+        self.check_gen(
+            ccode.Addition(dummy, dummy),
+            "(dummy + dummy)",
+            action="_act_with_parentheses",
+        )
+
 
 class TestUnaryOperation(CCodeTest):
 
