@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-PYTHONPATH += $(PWD)/..
+PYTHONPATH += $(PWD)
 export PYTHONPATH
 
 test:
