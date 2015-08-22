@@ -49,5 +49,9 @@ class Source(object):
 
     def make(self, stream):
         source_stream = _SourceStream(self.config, stream)
+        first = True
         for element in self.elements:
+            if not first and self.config.seperate_elements:
+                source_stream.linefeed()
+            first = False
             element._act(source_stream)
