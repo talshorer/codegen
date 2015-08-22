@@ -321,6 +321,16 @@ class Func(Block):
         return Expr(self.decl.name)
 
 
+class StatementExpression(Block):
+
+    END_WITH_LINEFEED = False
+
+    def _act(self, source):
+        source.write("(")
+        Block._act(self, source)
+        source.writeline(")")
+
+
 class Cast(_UnaryOperation):
 
     PARENTHESES_BEHAVIOUR = True

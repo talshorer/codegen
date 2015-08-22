@@ -325,6 +325,15 @@ class TestFunc(CCodeTest):
         self.check_gen(expr, "a")
 
 
+class TestStatementExpression(CCodeTest):
+
+    def test_statement_expression(self):
+        self.check_gen(ccode.StatementExpression(), (
+            "({\n"
+            "})\n"
+        ))
+
+
 class TestCast(CCodeTest):
 
     def test_cast(self):
