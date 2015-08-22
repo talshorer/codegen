@@ -7,6 +7,13 @@ from codegen.lang.c import cdecl
 ct_int = cdecl.Primitive("int")
 
 
+class TestNotImplementedErrors(unittest.TestCase):
+
+    def test_ctype_make(self):
+        with self.assertRaises(NotImplementedError):
+            cdecl._CType()._make()
+
+
 class TestPrimitive(unittest.TestCase):
 
     def test_primitive(self):
