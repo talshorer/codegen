@@ -196,11 +196,7 @@ class Block(_CCode):
 
     def _act(self, source, force_bracelets=False):
         needs_bracelets = force_bracelets or self.needs_bracelets()
-        do_indent = True
-        if source._indented:
-            # seperate code from last element
-            source.write(" ")
-            do_indent = needs_bracelets
+        do_indent = needs_bracelets or not source._indented
         if needs_bracelets:
             source.writeline("{")
         if do_indent:
@@ -231,7 +227,7 @@ class _CondBlock(Block):
     def _act(self, source, *args, **kw):
         source.write("{} (".format(self.MAGIC_WORD))
         self.cond._act(source)
-        source.write(")")
+        source.write(") ")
         Block._act(self, source, *args, **kw)
 
 
@@ -241,7 +237,7 @@ class ElseBlock(Block):
         return Block.needs_bracelets(self) or type(self.code[0]) is not IfBlock
 
     def _act(self, source):
-        source.write(" else")  # another space will be added by Block._act()
+        source.write(" else ")
         Block._act(self, source)
 
 
