@@ -7,7 +7,7 @@ class Code(object):
         raise NotImplementedError("This is an abstract class")
 
 
-class _EmptyLine(object):
+class _EmptyLine(Code):
 
     def _act(self, source):
         source.linefeed()
