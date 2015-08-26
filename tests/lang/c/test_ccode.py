@@ -322,9 +322,6 @@ class TestCall(CCodeTest):
         call = ccode.Call(dummy, [dummy, dummy])
         self.check_gen(call, "dummy(dummy, dummy)")
 
-    def test_call_unary_operation(self):
-        self.check_gen(ccode.Call(ccode.Dereference(dummy), []), "(*dummy)()")
-
 
 class TestFunc(CCodeTest):
 
@@ -360,7 +357,3 @@ class TestSubscript(CCodeTest):
     def test_subscript_simple(self):
         call = ccode.Subscript(dummy, dummy)
         self.check_gen(call, "dummy[dummy]")
-
-    def test_subsript_unary_operation(self):
-        element = ccode.Subscript(ccode.Dereference(dummy), dummy)
-        self.check_gen(element, "(*dummy)[dummy]")
