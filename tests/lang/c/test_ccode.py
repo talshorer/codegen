@@ -124,7 +124,7 @@ class TestBinaryOperation(CCodeTest):
         )
 
 
-class TestUnaryOperation(CCodeTest):
+class TestPrefixUnaryOperation(CCodeTest):
 
     def test_simple_prefix_unary_ops(self):
         for op in [
@@ -141,6 +141,9 @@ class TestUnaryOperation(CCodeTest):
 
     def test_prefix_unary_parentheses(self):
         self.check_gen(ccode.PreIncrement(dummy_parentheses), "++(0 + 1)")
+
+
+class TestPostfixUnaryOperation(CCodeTest):
 
     def test_simple_suffix_unary_ops(self):
         for op in [
