@@ -29,7 +29,7 @@ class _CCode(code.Code):
         if needs_parentheses:
             source.write(")")
 
-    def _act_force_parentheses_on_unary(self, source):
+    def _act_force_parentheses_on_prefix_unary(self, source):
         self._act_with_parentheses(source, isinstance(self, _UnaryOperation))
 
     def _parts_act_with_seperator(self, source, parts, sep):
@@ -146,7 +146,7 @@ class _PrefixUnaryOperation(_UnaryOperation):
 class _PostfixUnaryOperation(_UnaryOperation):
 
     def _act(self, source):
-        self.operand._act_with_parentheses(source)
+        self.operand._act_force_parentheses_on_prefix_unary(source)
         source.write(self.OP)
 
 
@@ -306,7 +306,7 @@ class Call(_CCode):
 
     def _act(self, source):
         # unary operations always need parentheses when called
-        self.func._act_force_parentheses_on_unary(source)
+        self.func._act_force_parentheses_on_prefix_unary(source)
         source.write("(")
         self._parts_act_with_seperator(source, self.args, ", ")
         source.write(")")
@@ -357,7 +357,7 @@ class Subscript(_CCode):
 
     def _act(self, source):
         # unary operations always need parentheses when subscripted
-        self.arr._act_force_parentheses_on_unary(source)
+        self.arr._act_force_parentheses_on_prefix_unary(source)
         source.write("[")
         self.index._act(source)
         source.write("]")

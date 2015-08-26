@@ -142,6 +142,12 @@ class TestPrefixUnaryOperation(CCodeTest):
     def test_prefix_unary_parentheses(self):
         self.check_gen(ccode.PreIncrement(dummy_parentheses), "++(0 + 1)")
 
+    def test_prefix_unary_on_postfix_unary(self):
+        self.check_gen(
+            ccode.PreIncrement(ccode.PostIncrement(dummy)),
+            "++dummy++",
+        )
+
 
 class TestPostfixUnaryOperation(CCodeTest):
 
@@ -154,6 +160,12 @@ class TestPostfixUnaryOperation(CCodeTest):
 
     def test_suffix_unary_parentheses(self):
         self.check_gen(ccode.PostIncrement(dummy_parentheses), "(0 + 1)++")
+
+    def test_postfix_unary_on_prefix_unary(self):
+        self.check_gen(
+            ccode.PostIncrement(ccode.PreIncrement(dummy)),
+            "(++dummy)++",
+        )
 
 
 class TestBlock(CCodeTest):
