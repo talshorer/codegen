@@ -29,9 +29,6 @@ class _CCode(code.Code):
         if needs_parentheses:
             source.write(")")
 
-    def _act_force_parentheses_on_prefix_unary(self, source):
-        self._act_with_parentheses(source, isinstance(self, _UnaryOperation))
-
     def _parts_act_with_seperator(self, source, parts, sep):
         first = True
         for part in parts:
@@ -150,7 +147,8 @@ class _PrefixUnaryOperation(_UnaryOperation):
 class _PostfixUnaryOperation(_UnaryOperation):
 
     def _act(self, source):
-        self.operand._act_force_parentheses_on_prefix_unary(source)
+        force_parentheses = isinstance(self.operand, _PrefixUnaryOperation)
+        self.operand._act_with_parentheses(source, force_parentheses)
         self._act_op(source)
 
 
