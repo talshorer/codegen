@@ -135,11 +135,15 @@ class _UnaryOperation(_CCode):
             raise NotImplementedError("This is an abstract class")
         self.operand = operand
 
+    def _act_op(self, source):
+        source.write(self.OP)
+        
+
 
 class _PrefixUnaryOperation(_UnaryOperation):
 
     def _act(self, source):
-        source.write(self.OP)
+        self._act_op(source)
         self.operand._act_with_parentheses(source)
 
 
@@ -147,7 +151,7 @@ class _PostfixUnaryOperation(_UnaryOperation):
 
     def _act(self, source):
         self.operand._act_force_parentheses_on_prefix_unary(source)
-        source.write(self.OP)
+        self._act_op(source)
 
 
 def _create_unary_operation(name, op, is_suffix=False):
