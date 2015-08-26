@@ -300,17 +300,16 @@ class ForLoop(_CondBlock):
         _CondBlock.__init__(self, self._ForCond(init, cond, loop), *args, **kw)
 
 
-class Call(_CCode):
+class Call(_PostfixUnaryOperation):
 
-    PARENTHESES_BEHAVIOUR = False
+    OP = object()  # not None
 
     def __init__(self, func, args):
         self.func = func
         self.args = args
+        _PostfixUnaryOperation.__init__(self, func)
 
-    def _act(self, source):
-        # unary operations always need parentheses when called
-        self.func._act_force_parentheses_on_prefix_unary(source)
+    def _act_op(self, source):
         source.write("(")
         self._parts_act_with_seperator(source, self.args, ", ")
         source.write(")")
@@ -351,17 +350,15 @@ class Cast(_PrefixUnaryOperation):
         _PrefixUnaryOperation.__init__(self, value)
 
 
-class Subscript(_CCode):
+class Subscript(_PostfixUnaryOperation):
 
-    PARENTHESES_BEHAVIOUR = False
+    OP = object()  # not None
 
     def __init__(self, arr, index):
-        self.arr = arr
         self.index = index
+        _PostfixUnaryOperation.__init__(self, arr)
 
-    def _act(self, source):
-        # unary operations always need parentheses when subscripted
-        self.arr._act_force_parentheses_on_prefix_unary(source)
+    def _act_op(self, source):
         source.write("[")
         self.index._act(source)
         source.write("]")
