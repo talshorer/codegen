@@ -134,7 +134,6 @@ class _UnaryOperation(_CCode):
 
     def _act_op(self, source):
         source.write(self.OP)
-        
 
 
 class _PrefixUnaryOperation(_UnaryOperation):
