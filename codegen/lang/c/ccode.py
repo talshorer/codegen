@@ -128,7 +128,6 @@ LogicalOr = _create_binary_operation("LogicalOr", "||")
 class _UnaryOperation(_CCode):
 
     OP = None
-    IS_SUFFIX = False
     PARENTHESES_BEHAVIOUR = False
 
     def __init__(self, operand):
@@ -136,16 +135,24 @@ class _UnaryOperation(_CCode):
             raise NotImplementedError("This is an abstract class")
         self.operand = operand
 
+
+class _PrefixUnaryOperation(_UnaryOperation):
+
     def _act(self, source):
-        if not self.IS_SUFFIX:
-            source.write(self.OP)
+        source.write(self.OP)
         self.operand._act_with_parentheses(source)
-        if self.IS_SUFFIX:
-            source.write(self.OP)
+
+
+class _PostfixUnaryOperation(_UnaryOperation):
+
+    def _act(self, source):
+        self.operand._act_with_parentheses(source)
+        source.write(self.OP)
 
 
 def _create_unary_operation(name, op, is_suffix=False):
-    return type(name, (_UnaryOperation,), dict(OP=op, IS_SUFFIX=is_suffix))
+    base = _PostfixUnaryOperation if is_suffix else _PrefixUnaryOperation
+    return type(name, (base,), dict(OP=op))
 
 
 BitNegation = _create_unary_operation("BitNegation", "~")
@@ -331,13 +338,13 @@ class StatementExpression(Block):
         source.writeline(")")
 
 
-class Cast(_UnaryOperation):
+class Cast(_PrefixUnaryOperation):
 
     PARENTHESES_BEHAVIOUR = True
 
     def __init__(self, casttype, value):
         self.OP = "({})".format(cdecl.NamelessArg(casttype))
-        _UnaryOperation.__init__(self, value)
+        _PrefixUnaryOperation.__init__(self, value)
 
 
 class Subscript(_CCode):
