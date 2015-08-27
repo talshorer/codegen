@@ -1,10 +1,11 @@
 #! /usr/bin/python3
 
 import unittest
-import io
 
 from codegen.lang.c import ccode, cdecl, csource
-from codegen.core import source, code
+from codegen.core import code
+
+from tests.lang import common
 
 dummy = ccode.Expr("dummy")
 dummy_parentheses = ccode.Expr("0 + 1")
@@ -30,13 +31,8 @@ class TestNotImplementedErrors(unittest.TestCase):
             ccode._CondBlock(None)
 
 
-class CCodeTest(unittest.TestCase):
-
-    def check_gen(self, element, expected, action="_act"):
-        stream = io.StringIO()
-        sourceobj = source._SourceStream(csource._config, stream)
-        getattr(element, action)(sourceobj)
-        self.assertEqual(stream.getvalue(), expected)
+class CCodeTest(common.LangTest):
+    CONFIG = csource._config
 
 
 class TestExpr(CCodeTest):
