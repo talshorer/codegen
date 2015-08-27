@@ -40,6 +40,8 @@ class _SourceStream(object):
 
 class Source(object):
 
+    _SOURCE_STREAM_CLASS = _SourceStream
+
     def __init__(self, config):
         self.config = config
         self.elements = []
@@ -48,7 +50,7 @@ class Source(object):
         self.elements.append(element)
 
     def make(self, stream):
-        source_stream = _SourceStream(self.config, stream)
+        source_stream = self._SOURCE_STREAM_CLASS(self.config, stream)
         first = True
         for element in self.elements:
             if not first and self.config.seperate_elements:
