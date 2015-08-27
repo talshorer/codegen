@@ -56,7 +56,7 @@ class Pointer(_CType):
 
 class Array(_SuffixType):
 
-    def __init__(self, etype, size):
+    def __init__(self, etype, size=""):
         self.etype = etype
         self.size = size
 

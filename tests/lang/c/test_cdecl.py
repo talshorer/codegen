@@ -74,6 +74,10 @@ class TestArray(unittest.TestCase):
         decl = cdecl.Array(cdecl.Array(ct_int, 1), 1)("a")
         self.assertEqual(str(decl), "int a[1][1]")
 
+    def test_unknown_size_array(self):
+        decl = cdecl.Array(ct_int)("a")
+        self.assertEqual(str(decl), "int a[]")
+
 
 class TestNamelessArg(unittest.TestCase):
 
