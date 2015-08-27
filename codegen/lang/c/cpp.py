@@ -20,14 +20,17 @@ class _IncludeFile(_CppDirective):
     def _act(self, source):
         source.write("{}{}{}".format(self.OPENER, self.name, self.CLOSER))
 
+
 class LocalIncludeFile(_IncludeFile):
 
     OPENER = CLOSER = "\""
+
 
 class GlobalIncludeFile(_IncludeFile):
 
     OPENER = "<"
     CLOSER = ">"
+
 
 class Include(_CppDirective):
 
