@@ -2,9 +2,9 @@
 
 import unittest
 
-from codegen.lang.c import cpp
+from tests.lang.c.common import CCodeTest, dummy
 
-from tests.lang.c.test_ccode import CCodeTest, dummy
+from codegen.lang.c import cpp
 
 
 class TestNotImplementedErrors(unittest.TestCase):

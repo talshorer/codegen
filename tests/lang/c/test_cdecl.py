@@ -2,9 +2,9 @@
 
 import unittest
 
-from codegen.lang.c import cdecl
+from tests.lang.c.common import ct_int
 
-ct_int = cdecl.Primitive("int")
+from codegen.lang.c import cdecl
 
 
 class TestNotImplementedErrors(unittest.TestCase):

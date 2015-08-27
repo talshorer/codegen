@@ -2,14 +2,12 @@
 
 import unittest
 
-from codegen.lang.c import ccode, cdecl, csource
+from tests.lang.c.common import CCodeTest, dummy, ct_int
+
+from codegen.lang.c import ccode, cdecl
 from codegen.core import code
 
-from tests.lang import common
-
-dummy = ccode.Expr("dummy")
 dummy_parentheses = ccode.Expr("0 + 1")
-ct_int = cdecl.Primitive("int")
 
 
 class TestNotImplementedErrors(unittest.TestCase):
@@ -29,10 +27,6 @@ class TestNotImplementedErrors(unittest.TestCase):
     def test_cond_block_magic_word(self):
         with self.assertRaises(NotImplementedError):
             ccode._CondBlock(None)
-
-
-class CCodeTest(common.LangTest):
-    CONFIG = csource._config
 
 
 class TestExpr(CCodeTest):
