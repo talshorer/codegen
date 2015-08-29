@@ -213,6 +213,15 @@ class TestBlock(CCodeTest):
         ))
 
 
+class TestCondBlock(CCodeTest):
+
+    def test_cond_block_with_single_expression(self):
+        self.check_gen(ccode.WhileLoop(dummy, code=[dummy]), (
+            "while (dummy)\n"
+            "\tdummy;\n"
+        ))
+
+
 class TestIfBlock(CCodeTest):
 
     def test_if(self):

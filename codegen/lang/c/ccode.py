@@ -235,7 +235,11 @@ class _CondBlock(Block):
     def _act(self, source, *args, **kw):
         source.write("{} (".format(self.MAGIC_WORD))
         self.cond._act(source)
-        source.write(") ")
+        source.write(")")
+        if self.needs_bracelets():
+            source.write(" ")
+        else:
+            source.linefeed()
         Block._act(self, source, *args, **kw)
 
 
