@@ -25,7 +25,7 @@ class _SourceStream(object):
     def write(self, text):
         if not self._indented:
             self.stream.write(self._indent_level *
-                                     self.config.indentation)
+                              self.config.indentation)
             self._indented = True
         self.stream.write(text)
 

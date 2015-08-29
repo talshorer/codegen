@@ -13,7 +13,7 @@ class _IncludeFile(_CppDirective):
     CLOSER = None
 
     def __init__(self, name):
-        if self.OPENER == None or self.CLOSER == None:
+        if self.OPENER is None or self.CLOSER is None:
             raise NotImplementedError("This is an abstract class")
         self.name = name
 
