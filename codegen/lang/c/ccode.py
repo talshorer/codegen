@@ -29,7 +29,8 @@ class _CCode(code.Code):
         if needs_parentheses:
             source.write(")")
 
-    def _parts_act_with_seperator(self, source, parts, sep):
+    @staticmethod
+    def _parts_act_with_seperator(source, parts, sep):
         first = True
         for part in parts:
             if not first:
