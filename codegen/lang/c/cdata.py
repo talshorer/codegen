@@ -21,3 +21,16 @@ class StringLiteral(ccode.Expr):
 
     def __init__(self, s):
         ccode.Expr.__init__(self, "\"{}\"".format(s))
+
+
+class CompoundLiteral(ccode._CCode):
+
+    def __init__(self, values):
+        self.values = values
+
+    def _act(self, source):
+        source.write("{ ")
+        if self.values:
+            self._parts_act_with_seperator(source, self.values, ", ")
+            source.write(" ")
+        source.write("}")

@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from tests.lang.c.common import CCodeTest
+from tests.lang.c.common import CCodeTest, dummy
 
 from codegen.lang.c import cdata
 
@@ -21,3 +21,15 @@ class TestStringLiteral(CCodeTest):
 
     def test_escaped_string_literal(self):
         self.check_gen(cdata.StringLiteral("hello\\\"\\n"), "\"hello\\\"\\n\"")
+
+class TestCompoundLiteral(CCodeTest):
+
+    def test_empty_compound_literal(self):
+        self.check_gen(cdata.CompoundLiteral([]), "{ }")
+
+    def test_compound_literal_with_single_value(self):
+        self.check_gen(cdata.CompoundLiteral([dummy]), "{ dummy }")
+
+    def test_compound_literal_with_multiple_values(self):
+        compound = cdata.CompoundLiteral([dummy, dummy])
+        self.check_gen(compound, "{ dummy, dummy }")
