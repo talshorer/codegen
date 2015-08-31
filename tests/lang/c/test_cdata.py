@@ -20,7 +20,7 @@ class TestStringLiteral(CCodeTest):
         self.check_gen(cdata.StringLiteral("hello"), "\"hello\"")
 
     def test_escaped_string_literal(self):
-        self.check_gen(cdata.StringLiteral("hello\\\"\\n"), "\"hello\\\"\\n\"")
+        self.check_gen(cdata.StringLiteral("hello\"\n"), "\"hello\\\"\\n\"")
 
 class TestCompoundLiteral(CCodeTest):
 

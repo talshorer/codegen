@@ -19,8 +19,15 @@ class IntLiteral(ccode.Expr):
 
 class StringLiteral(ccode.Expr):
 
+    @staticmethod
+    def _convert_char(c):
+        if c == "\"":  # special case since repr will enclose this with ''
+            return "\\\""
+        return repr(c)[1:-1]  # repr("\n") == "'\\n'", repr("b") == "'b'"
+
     def __init__(self, s):
-        ccode.Expr.__init__(self, "\"{}\"".format(s))
+        converted = "".join(self._convert_char(c) for c in s)
+        ccode.Expr.__init__(self, "\"{}\"".format(converted))
 
 
 class CompoundLiteral(ccode._CCode):
