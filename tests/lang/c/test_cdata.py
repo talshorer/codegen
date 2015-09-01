@@ -25,6 +25,7 @@ class TestStringLiteral(CCodeTest):
     def test_binray_string_literal(self):
         self.check_gen(cdata.StringLiteral("\x00\x01"), "\"\\x00\\x01\"")
 
+
 class TestCompoundLiteral(CCodeTest):
 
     def test_empty_compound_literal(self):
