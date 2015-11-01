@@ -13,6 +13,10 @@ class TestNotImplementedErrors(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             cdecl._CType()._make()
 
+    def test_composite_type(self):
+        with self.assertRaises(NotImplementedError):
+            cdecl._CompositeType(None, None)
+
 
 class TestPrimitive(unittest.TestCase):
 
@@ -99,3 +103,34 @@ class TestNamelessArg(unittest.TestCase):
     def test_nameless_pointer_to_array(self):
         decl = cdecl.NamelessArg(cdecl.Pointer(cdecl.Array(ct_int, 1)))
         self.assertEqual(str(decl), "int (*)[1]")
+
+
+class TestCompositeType(unittest.TestCase):
+
+    def test_struct_no_fields(self):
+        decl = cdecl.Struct("a", [])("a")
+        self.assertEqual(str(decl), "struct a {\n} a")
+
+    def test_struct_one_field(self):
+        decl = cdecl.Struct("a", [ct_int("a")])("a")
+        self.assertEqual(str(decl), "struct a {\n\tint a;\n} a")
+
+    def test_struct_multiple_fields(self):
+        decl = cdecl.Struct("a", [ct_int("a"), ct_int("b")])("a")
+        self.assertEqual(str(decl), "struct a {\n\tint a;\n\tint b;\n} a")
+
+    def test_union(self):
+        decl = cdecl.Union("a", [])("a")
+        self.assertEqual(str(decl), "union a {\n} a")
+
+    def test_to_nonverbose(self):
+        decl = cdecl.Struct("a", []).to_nonverbose()("a")
+        self.assertEqual(str(decl), "struct a a")
+
+    def test_pointer_to_struct(self):
+        decl = cdecl.Pointer(cdecl.Struct("a", []))("a")
+        self.assertEqual(str(decl), "struct a {\n} *a")
+
+    def test_array_of_struct(self):
+        decl = cdecl.Array(cdecl.Struct("a", []), 1)("a")
+        self.assertEqual(str(decl), "struct a {\n} a[1]")

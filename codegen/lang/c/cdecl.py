@@ -73,3 +73,33 @@ class Func(_SuffixType):
 
     def _make(self, decl):
         return self.rettype._make("{}({})".format(decl, self._args_str))
+
+
+class _CompositeType(_CType):
+
+    MAGIC_WORD = None
+
+    def __init__(self, name, fields):
+        if self.MAGIC_WORD is None:
+            raise NotImplementedError("This is an abstract class")
+        self.name = name
+        self.fields = fields
+
+    def to_nonverbose(self):
+        return Primitive("%s %s" % (self.MAGIC_WORD, self.name))
+
+    def _make(self, decl):
+        return (
+            "{} {} {}".format(self.MAGIC_WORD, self.name, "{") +
+            "".join("\n\t{};".format(field) for field in self.fields) +
+            "\n{} {}".format("}", decl))
+
+
+class Struct(_CompositeType):
+
+    MAGIC_WORD = "struct"
+
+
+class Union(_CompositeType):
+
+    MAGIC_WORD = "union"
