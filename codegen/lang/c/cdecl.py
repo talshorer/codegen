@@ -86,13 +86,17 @@ class _CompositeType(_CType):
         self.fields = fields
 
     def to_nonverbose(self):
-        return Primitive("%s %s" % (self.MAGIC_WORD, self.name))
+        return Primitive("{} {}".format(self.MAGIC_WORD, self.name))
+
+    @staticmethod
+    def withspace(s):
+        return "{}{}".format(" " if s else "", s)
 
     def _make(self, decl):
         return (
-            "{} {} {}".format(self.MAGIC_WORD, self.name, "{") +
+            "{}{} {}".format(self.MAGIC_WORD, self.withspace(self.name), "{") +
             "".join("\n\t{};".format(field) for field in self.fields) +
-            "\n{}{}{}".format("}", " " if decl else "", decl))
+            "\n{}{}".format("}", self.withspace(decl)))
 
 
 class Struct(_CompositeType):

@@ -134,3 +134,7 @@ class TestCompositeType(unittest.TestCase):
     def test_array_of_struct(self):
         decl = cdecl.Array(cdecl.Struct("a", []), 1)("a")
         self.assertEqual(str(decl), "struct a {\n} a[1]")
+
+    def test_tagless_struct(self):
+        decl = cdecl.Struct("", [])("a")
+        self.assertEqual(str(decl), "struct {\n} a")
