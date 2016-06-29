@@ -29,11 +29,11 @@ class TestStringLiteral(CCodeTest):
 class TestCompoundLiteral(CCodeTest):
 
     def test_empty_compound_literal(self):
-        self.check_gen(cdata.CompoundLiteral([]), "{ }")
+        self.check_gen(cdata.CompoundLiteral([]), "{\n}")
 
     def test_compound_literal_with_single_value(self):
-        self.check_gen(cdata.CompoundLiteral([dummy]), "{ dummy }")
+        self.check_gen(cdata.CompoundLiteral([dummy]), "{\n\tdummy,\n}")
 
     def test_compound_literal_with_multiple_values(self):
         compound = cdata.CompoundLiteral([dummy, dummy])
-        self.check_gen(compound, "{ dummy, dummy }")
+        self.check_gen(compound, "{\n\tdummy,\n\tdummy,\n}")

@@ -36,8 +36,12 @@ class CompoundLiteral(ccode._CCode):
         self.values = values
 
     def _act(self, source):
-        source.write("{ ")
-        if self.values:
-            self._parts_act_with_seperator(source, self.values, ", ")
-            source.write(" ")
+        source.writeline("{")
+        source.indent()
+        for value in self.values:
+            value._act(source)
+            source.writeline(",")
+#            self._parts_act_with_seperator(source, self.values, ", ")
+#            source.write(" ")
+        source.dedent()
         source.write("}")
