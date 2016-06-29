@@ -92,7 +92,7 @@ class _CompositeType(_CType):
         return (
             "{} {} {}".format(self.MAGIC_WORD, self.name, "{") +
             "".join("\n\t{};".format(field) for field in self.fields) +
-            "\n{} {}".format("}", decl))
+            "\n{}{}{}".format("}", " " if decl else "", decl))
 
 
 class Struct(_CompositeType):
