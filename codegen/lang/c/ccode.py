@@ -64,6 +64,16 @@ class Variable(Expr):
         return [var.decl for var in variables]
 
 
+class Global(Variable):
+
+    def _act(self, source):
+        Variable._var_act(self, source)
+        source.writeline(";");
+
+    def to_variable(self):
+        return Variable(self.decl, self.value)
+
+
 class _BinaryOperation(_CCode):
 
     OP = None

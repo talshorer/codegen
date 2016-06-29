@@ -63,6 +63,15 @@ class TestVariable(CCodeTest):
         self.assertEqual(ccode.Variable.to_args(variables), decls)
 
 
+class TestGlobal(CCodeTest):
+
+    def test_global(self):
+        self.check_gen(ccode.Global(ct_int("a")), "int a;\n")
+
+    def test_global_to_variable(self):
+        self.check_gen(ccode.Global(ct_int("a")).to_variable(), "a")
+
+
 class TestBinaryOperation(CCodeTest):
 
     def test_simple_binary_ops(self):
