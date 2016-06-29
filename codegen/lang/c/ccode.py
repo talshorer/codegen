@@ -168,6 +168,10 @@ PreDecrement = _create_unary_operation("PreDecrement", "--")
 PostIncrement = _create_unary_operation("PostIncrement", "++", True)
 PostDecrement = _create_unary_operation("PostDecrement", "--", True)
 Return = _create_unary_operation("Return", "return ")
+Extern = _create_unary_operation("Extern", "extern ")
+Static = _create_unary_operation("Static", "static ")
+Const = _create_unary_operation("Const", "const ")
+Typedef = _create_unary_operation("Typedef", "typedef ")
 
 
 class Block(_CCode):
