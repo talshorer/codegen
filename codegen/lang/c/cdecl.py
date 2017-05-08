@@ -79,16 +79,11 @@ class _CompositeType(_CType):
 
     MAGIC_WORD = None
 
-    def __init__(self, name, fields, attributes=None):
+    def __init__(self, name, fields):
         if self.MAGIC_WORD is None:
             raise NotImplementedError("This is an abstract class")
         self.name = name
         self.fields = fields
-        if attributes is None:
-            self.attributes = ""
-        else:
-           self.attributes = " __attribute__(({}))".format(
-               ",".join(attributes))
 
     def to_nonverbose(self):
         return Primitive("{} {}".format(self.MAGIC_WORD, self.name))
@@ -99,8 +94,8 @@ class _CompositeType(_CType):
 
     def _make(self, decl):
         return (
-            "{}{}{} {}".format(self.MAGIC_WORD, self.withspace(self.name),
-                               self.attributes, "{") +
+            "{}{} {}".format(self.MAGIC_WORD, self.withspace(self.name),
+                               "{") +
             "".join("\n\t{};".format(field) for field in self.fields) +
             "\n{}{}".format("}", self.withspace(decl)))
 
